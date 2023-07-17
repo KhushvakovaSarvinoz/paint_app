@@ -1,8 +1,10 @@
-const canvas = document.querySelector('canvas')
+const canvas = document.querySelector('canvas'),
+    toolBtns = document.querySelectorAll('.tool')
 
 let ctx = canvas.getContext('2d'),
    isDrawing = false,
-   brushWidth = 5
+   brushWidth = 5,
+   selectedTool = brush
 
 window.addEventListener('load', ()=>{
     canvas.width = canvas.offsetWidth
@@ -20,6 +22,14 @@ const drawing = e => {
     ctx.lineTo(e.offsetX, e.offsetY)
     ctx.stroke()
 }
+toolBtns.forEach(btn =>{
+    btn.addEventListener('click', () =>{
+        document.querySelector('.options .active').classList.remove('active')
+        btn.classList.add('active')
+        selectedTool = btn.id
+        console.log(`selected tool ${selectedTool}`)
+    })
+})
 const stopDraw = () =>{
     isDrawing = false
 }
