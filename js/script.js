@@ -1,7 +1,8 @@
 //Variables
 const canvas = document.querySelector('canvas'),
     toolBtns = document.querySelectorAll('.tool'),
-    fillColor = document.querySelector('#fill-color')
+    fillColor = document.querySelector('#fill-color'),
+    sizeSlider = document.querySelector('#size-slider')
 
 let ctx = canvas.getContext('2d'),
    isDrawing = false,
@@ -44,6 +45,15 @@ const drawCircle = e =>{
     fillColor.checked ? ctx.fill() : ctx.stroke()
 }
 
+const drawTriangle = e =>{
+    ctx.beginPath()
+    ctx.moveTo(prevMouseX, prevMouseY)
+    ctx.lineTo(e.offsetX, e.offsetY)
+    ctx.lineTo(prevMouseX * 2 - e.offsetX, e.offsetY)
+    ctx.closePath()
+    fillColor.checked ? ctx.fill() : ctx.stroke()
+}
+
 const drawing = e => {
     if (!isDrawing) return
     ctx.putImageData(snapshot, 0, 0)
@@ -58,6 +68,9 @@ const drawing = e => {
             break
         case 'circle':
             drawCircle(e)
+            break
+        case 'triangle':
+            drawTriangle(e)
             break
         default:
             break
@@ -74,6 +87,10 @@ toolBtns.forEach(btn =>{
         console.log(`selected tool ${selectedTool}`)
     })
 })
+
+// Set Slider size
+sizeSlider.addEventListener('change', () => (brushWidth = sizeSlider.value))
+
 
 //Stop drawing
 const stopDraw = () =>{
