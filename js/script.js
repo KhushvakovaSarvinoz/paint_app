@@ -4,7 +4,9 @@ const canvas = document.querySelector('canvas'),
     fillColor = document.querySelector('#fill-color'),
     sizeSlider = document.querySelector('#size-slider'),
     colorBtns = document.querySelectorAll('.colors .option'),
-    colorPicker = document.querySelector('#color-picker')
+    colorPicker = document.querySelector('#color-picker'),
+    deleteBtn = document.querySelector('.delete-canvas'),
+    saveBtn = document.querySelector('.save-canvas')
 
 let ctx = canvas.getContext('2d'),
    isDrawing = false,
@@ -15,11 +17,17 @@ let ctx = canvas.getContext('2d'),
    prevMouseY,
    snapshot
 
-
+//Set canvas background
+const setCanvasBackground = ()=>{
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = selectedColor
+}
 // Set CANVAS width and height
 window.addEventListener('load', ()=> { 
     canvas.width = canvas.offsetWidth
     canvas.height = canvas.offsetHeight
+    setCanvasBackground()
 })
 
 // Start drawing
@@ -62,11 +70,12 @@ const drawing = e => {
     if (!isDrawing) return
     ctx.putImageData(snapshot, 0, 0)
 
+    if(selectedTool == 'brush' || selectedTool == 'eraser'){
+        ctx.strokeStyle = selectedTool === 'eraser' ? '#fff' : selectedColor
+        ctx.lineTo(e.offsetX, e.offsetY)
+        ctx.stroke()
+    }
     switch(selectedTool) {
-        case 'brush':
-            ctx.lineTo(e.offsetX, e.offsetY)
-            ctx.stroke()
-            break
         case 'rectangle':
             drawRectangle(e)
             break
@@ -112,10 +121,26 @@ colorPicker.addEventListener("change", () =>{
     colorPicker.parentElement.click()
 })
 
+
+// Delete canvas
+deleteBtn.addEventListener('click', () =>{
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    setCanvasBackground()
+})
+
+//Save canvas
+saveBtn.addEventListener('click', () =>{
+    const link = document.createElement('a')
+    link.download = `Paint-image${Date.now()}.jpg`
+    link.href = canvas.toDataURL()
+    link.click()
+})
+
 //Stop drawing
 const stopDraw = () =>{
     isDrawing = false
 }
+
 canvas.addEventListener('mousedown', startDraw)
 canvas.addEventListener('mousemove', drawing)
 canvas.addEventListener('mouseup', stopDraw)
